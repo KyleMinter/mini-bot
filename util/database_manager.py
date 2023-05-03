@@ -16,9 +16,15 @@ class Database:
     @staticmethod
     def get_connection():
         try:
-            # Attempt to open a connect to a tag database with the name provided in the config file.
+            # Get the tag database name from the config file.
             config = Config.get_config()
-            tag_database_name = config["tag_database_name"]
+            tag_database_name = str(config["tag_database_name"])
+
+            # If the tag database name in the config is not suffixed with '.db' we will add it.
+            if not (tag_database_name.endswith(".db")):
+                tag_database_name += ".db"
+            
+            # Attempt to open a connect to a tag database with the name provided in the config file.
             con = sqlite3.connect(f"file:{tag_database_name}?mode=rw", uri=True)
             return con
         except:
@@ -44,9 +50,15 @@ class Database:
             # Print a message saying that we were unable to connect to the tag database.
             print("Unable to read specified tag database file. Writing a default one to the current directory.\n")
             
-            # Create a new tag database by creating a connection.
+            # Get the tag database name from the config file.
             config = Config.get_config()
-            tag_database_name = config["tag_database_name"]
+            tag_database_name = str(config["tag_database_name"])
+
+            # If the tag database name in the config is not suffixed with '.db' we will add it.
+            if not (tag_database_name.endswith(".db")):
+                tag_database_name += ".db"
+
+            # Create a new tag database by creating a connection.
             con = sqlite3.connect(tag_database_name)
 
             # Create a table to contain the tags.

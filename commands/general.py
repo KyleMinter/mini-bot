@@ -73,7 +73,7 @@ class GeneralExtension(Extension):
         embed.set_author(botUser.tag, icon_url=botUser.display_avatar.url)
         
         # If no invite link is present in the config we will say so.
-        if (inviteLink == ""):
+        if (inviteLink == "" or inviteLink != "https://discord.com/oauth2/authorize"):
             embed.add_field("Invite", "No invite link was provided by the bot host.")
         else:
             embed.add_field("Invite", f"Click [here]({inviteLink}) to invite this bot to another server!")

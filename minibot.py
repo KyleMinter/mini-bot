@@ -28,9 +28,9 @@ else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = interactions.Client(
         token=config["token"],
+        intents=Intents.DEFAULT,
         delete_unused_application_cmds=False,
-        send_command_tracebacks=False,
-        intents=Intents.DEFAULT)
+        send_command_tracebacks=False)
 
 # Listen for ready event.
 @interactions.listen()
@@ -38,8 +38,8 @@ async def on_ready():
     print(f"Logged in as {client.user}")
 
 # Load command extensions for the bot.
-client.load_extension(name = ".general", package="commands")
-client.load_extension(name = ".tags", package="commands")
+client.load_extension(name=".general", package="extensions")
+client.load_extension(name=".tags", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

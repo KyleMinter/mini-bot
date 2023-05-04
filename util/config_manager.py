@@ -25,7 +25,8 @@ class Config:
                     "tag_database_name": "database_name.db",
                     "keep_server_tags_separate": True,
                     "testing_mode_enabled": False,
-                    "testing_guild_id": "guild_id"
+                    "testing_guild_id": "guild_id",
+                    "blacklist": ["word1", "word2"]
                 }
 
     """

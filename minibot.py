@@ -19,7 +19,7 @@ if (config["testing_mode_enabled"]):
     print("Testing mode enabled.\nSlash commands will be automatically instantiated with guild ID scope specified in config.")
     client = interactions.Client(
         token=config["token"],
-        intents=Intents.DEFAULT,
+        intents=Intents.new(default=True, message_content=True),
         delete_unused_application_cmds=True,
         send_command_tracebacks=True,
         debug_scope=config["testing_guild_id"])
@@ -28,7 +28,7 @@ else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = interactions.Client(
         token=config["token"],
-        intents=Intents.DEFAULT,
+        intents=Intents.new(default=True, message_content=True),
         delete_unused_application_cmds=False,
         send_command_tracebacks=False)
 
@@ -37,9 +37,10 @@ else:
 async def on_ready():
     print(f"Logged in as {client.user}")
 
-# Load command extensions for the bot.
+# Load the extensions for the bot.
 client.load_extension(name=".general", package="extensions")
 client.load_extension(name=".tags", package="extensions")
+client.load_extension(name=".blacklist", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

@@ -16,18 +16,6 @@ A class representing an extension of the bot. This extention contains the functi
 """
 class TagExtension(Extension):
     """
-    This is a dummy function called by interactions.py so that it knows how to load the extension.
-
-    @param client The client for the bot.
-    """
-    def setup(client):
-        TagExtension(client)
-    
-    #----------------------------------------
-    # Tag commands:
-    #----------------------------------------
-
-    """
     Tag Get Command.
     Displays the specified tag's content to the user who invoked this command.
     This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.

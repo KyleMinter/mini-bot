@@ -23,6 +23,7 @@ if (config["testing_mode_enabled"]):
         delete_unused_application_cmds=True,
         send_command_tracebacks=True,
         debug_scope=config["testing_guild_id"])
+    print("")
 else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = interactions.Client(
@@ -34,7 +35,6 @@ else:
 # Listen for ready event.
 @interactions.listen()
 async def on_ready():
-    print("")
     print(f"Logged in as {client.user}")
 
 # Load command extensions for the bot.

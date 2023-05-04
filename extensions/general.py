@@ -1,4 +1,5 @@
 import random
+import datetime
 import os
 import sys
 
@@ -31,10 +32,16 @@ class GeneralExtension(Extension):
 
         # Create an embedded message containing info about the bot.
         embed = Embed()
+
+        # Set the author and add fields to the embedded message.
         embed.set_author(botUser.tag, url="", icon_url=botUser.display_avatar.url)
         embed.add_field("About", "This is a simple discord bot with general commands and support for tags.\nThe source code for this bot can be found on GitHub [here](https://github.com/KyleMinter/mini-bot).")
         embed.add_field("Author", "[Kyle Minter](https://github.com/KyleMinter)")
         embed.add_field("Libraries", "This bot utilizes the following Python libraries:\n[interactions.py](https://github.com/interactions-py/interactions.py)\n[SQLite](https://sqlite.org/index.html)")
+
+        # Add a footer to the embedded message with the start time.
+        embed.set_footer(f"Start Time")
+        embed.timestamp = context.client.start_time
 
         # Respond to the user who invoked this command with the embedded message.
         await context.send(embeds=embed)

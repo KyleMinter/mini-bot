@@ -51,7 +51,7 @@ class BlacklistExtension(Extension):
         # Loop through the blacklist.
         for blacklisted_word in blacklist:
             # If the message contains the current word we are indexing, return True.
-            if (message.__contains__(blacklisted_word)):
+            if (blacklisted_word != "" and message.__contains__(blacklisted_word)):
                 return True
         
         # If no blacklisted words were found in the message, return False.

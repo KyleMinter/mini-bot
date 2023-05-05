@@ -128,12 +128,57 @@ class TimezonesExtension(Extension):
             # Check if this user has a timezone set for this server.
             if (fetch is None):
                 # If the user has not set their timezone for this server we will send them a message telling them so.
-                await context.send("You have no set your timezone in this server!")
+                await context.send("You have not set your timezone in this server!")
             else:
                 # Respond with the timezone the user has set for this server and their current time.
                 timezone = fetch[0]
                 currentTime = datetime.now(tz=ZoneInfo(timezone))
                 await context.send(f"Your timezone is: `{timezone}`\nThe current time is: `{currentTime}`")
+
+            # Close the connection to the database now that we are done accessing it.
+            con.close()
+        else:
+            # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
+            await context.send("Unable to access bot database!")
+    
+    """
+    Timezone Remove Command.
+    Removes the registered timezone for a user in the current server.
+    This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
+
+    @param context The context for which this command was invoked.
+    """
+    @timezone_set.subcommand(
+        sub_cmd_name="remove",
+        sub_cmd_description="Removes the registered timezone for a user in the current server"
+    )
+    async def timezone_remove(self, context: InteractionContext):
+        # Get a connection to the bot database.
+        con = Database.get_connection()
+        
+        # Check if the connection is valid.
+        if (con is not None):
+            # Create a cursor to query the database.
+            cur = con.cursor()
+            
+            # Query the databse for any rows with the current userID and guildID.
+            params = (str(context.author_id), str(context.guild_id),)
+            res = cur.execute(f"SELECT timezone FROM timezones WHERE userID = ? AND guildID = ?", params)
+            
+            # Store the results of our database query.
+            fetch = res.fetchone()
+
+            # Check if this user has a timezone set for this server.
+            if (fetch is None):
+                # If the user has not set their timezone for this server we will send them a message telling them so.
+                await context.send("You have not set your timezone in this server!")
+            else:
+                # Delete the user's timezone for this server from the database.
+                cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", params)
+                con.commit()
+
+                # Respond to the user and tell them that their timezone has been removed.
+                await context.send(f"Your timezone has been removed from the database.")
 
             # Close the connection to the database now that we are done accessing it.
             con.close()

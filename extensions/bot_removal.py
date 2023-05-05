@@ -7,7 +7,7 @@ from util.config_manager import Config
 from util.database_manager import Database
 
 from interactions import listen, Extension
-from interactions.api.events import GuildLeft, GuildUnavailable
+from interactions.api.events import GuildLeft
 
 """
 A class representing an extension of the bot.

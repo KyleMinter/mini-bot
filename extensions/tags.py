@@ -67,7 +67,18 @@ class TagExtension(Extension):
                 # Update the amountUsed counter for the tag.
                 used_counter = fetch[2]
                 used_counter += 1
-                cur.execute(f"UPDATE tags SET amountUsed = ?", (used_counter,))
+
+                # Check the config to see if the keep_server_tags_separate flag is set to true.
+                if (Config.get_config()["keep_server_tags_separate"]):
+                    # Only updates the tag if they share the same name and guildID.
+                    params = (used_counter, name, str(context.guild_id),)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
+                else:
+                    # Only updates the tag if they share the same name.
+                    params = (used_counter, name,)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                
+                # Commit the changes to the database.
                 con.commit()
 
                 # Respond to the user who invoked this command with the content of the tag.
@@ -364,10 +375,10 @@ class TagExtension(Extension):
             # With this flag enabled tags will only be pulled if they have the same guildID.
             if (Config.get_config()["keep_server_tags_separate"]):
                 # Pull a random tag with the same guildID from the database.
-                res = cur.execute(f"SELECT content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
+                res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
             else:
                 # Pull a random tag from the database.
-                res = cur.execute(f"SELECT content, amountUsed FROM tags ORDER BY RANDOM() LIMIT 1")
+                res = cur.execute(f"SELECT name, content, amountUsed FROM tags ORDER BY RANDOM() LIMIT 1")
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -376,10 +387,24 @@ class TagExtension(Extension):
             if (fetch is None):
                 await context.send("There are no tags saved to the database.")
             else:
+                # Get the tag name.
+                tagName = fetch[0]
+                
                 # Update the amountUsed counter for the tag.
-                used_counter = fetch[1]
+                used_counter = fetch[2]
                 used_counter += 1
-                cur.execute(f"UPDATE tags SET amountUsed = ?", (used_counter,))
+
+                # Check the config to see if the keep_server_tags_separate flag is set to true.
+                if (Config.get_config()["keep_server_tags_separate"]):
+                    # Only updates the tag if they share the same name and guildID.
+                    params = (used_counter, tagName, str(context.guild_id),)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
+                else:
+                    # Only updates the tag if they share the same name.
+                    params = (used_counter, tagName,)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                
+                # Commit the changes to the database.
                 con.commit()
 
                 # Respond to the user who invoked this command with the content of the tag.

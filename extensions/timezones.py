@@ -37,6 +37,7 @@ class TimezonesExtension(Extension):
         required=True,
         opt_type=OptionType.STRING
     )
+    @interactions.auto_defer()
     async def timezone_set(self, context: InteractionContext, city: str):
         # Gets the GeoName API username from the config.
         api_username = Config.get_config()["geoname_api_username"]

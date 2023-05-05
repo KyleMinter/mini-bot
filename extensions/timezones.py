@@ -167,6 +167,12 @@ class TimezonesExtension(Extension):
             
             # Store the results of our database query.
             fetch = res.fetchall()
+
+            # Checks if the results list is empty.
+            if (not fetch):
+                # If the list is empty we will send a message, to the user who invoked this command, saying so.
+                await context.send("No users have registered there timezone yet!")
+                return
             
             # Create a dictionary to store the users with registered timezones.
             user_dict = {}

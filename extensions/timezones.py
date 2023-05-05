@@ -83,11 +83,11 @@ class TimezonesExtension(Extension):
             if (fetch is None):
                 # If the user does not have their timezone set for this server, we will add it to the database.
                 cur.execute("INSERT INTO timezones VALUES (?, ?, ?)", params)
-                await context.send("City found! Added your timezone to the database.")
+                await context.send("City found! Registered your timezone for this server.")
             else:
                 # If the user already has their timezone set for this server, we will update their timezone.
                 cur.execute(f"UPDATE timezones SET timezone = ? WHERE userID = ? AND guildID = ?", params)
-                await context.send("City found! Updated your timezone in the database.")
+                await context.send("City found! Updated your timezone for this server.")
             
             # Commit the changes to the database.
             con.commit()
@@ -128,7 +128,7 @@ class TimezonesExtension(Extension):
             # Check if this user has a timezone set for this server.
             if (fetch is None):
                 # If the user has not set their timezone for this server we will send them a message telling them so.
-                await context.send("You have not set your timezone in this server!")
+                await context.send("You have not registered your timezone in this server!")
             else:
                 # Respond with the timezone the user has set for this server and their current time.
                 timezone = fetch[0]
@@ -171,14 +171,14 @@ class TimezonesExtension(Extension):
             # Check if this user has a timezone set for this server.
             if (fetch is None):
                 # If the user has not set their timezone for this server we will send them a message telling them so.
-                await context.send("You have not set your timezone in this server!")
+                await context.send("You have not registered your timezone in this server!")
             else:
                 # Delete the user's timezone for this server from the database.
                 cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", params)
                 con.commit()
 
                 # Respond to the user and tell them that their timezone has been removed.
-                await context.send(f"Your timezone has been removed from the database.")
+                await context.send(f"Your timezone has been removed from this server.")
 
             # Close the connection to the database now that we are done accessing it.
             con.close()

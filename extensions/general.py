@@ -1,5 +1,4 @@
 import random
-import datetime
 import os
 import sys
 
@@ -35,9 +34,9 @@ class GeneralExtension(Extension):
 
         # Set the author and add fields to the embedded message.
         embed.set_author(botUser.tag, url="", icon_url=botUser.display_avatar.url)
-        embed.add_field("About", "This is a simple discord bot with general commands and support for tags.\nThe source code for this bot can be found on GitHub [here](https://github.com/KyleMinter/mini-bot).")
+        embed.add_field("About", "This is a simple discord bot with general commands and support for tags, timezone registration, and a blacklist.\n\nThe source code for this bot can be found on GitHub [here](https://github.com/KyleMinter/mini-bot).")
         embed.add_field("Author", "[Kyle Minter](https://github.com/KyleMinter)")
-        embed.add_field("Libraries", "This bot utilizes the following Python libraries:\n[interactions.py](https://github.com/interactions-py/interactions.py)\n[SQLite](https://sqlite.org/index.html)")
+        embed.add_field("Libraries", "This bot utilizes the following Python libraries:\n[interactions.py](https://github.com/interactions-py/interactions.py)\n[Geocoder](https://geocoder.readthedocs.io/providers/GeoNames.html)\n[tzdata](https://pypi.org/project/tzdata/)")
 
         # Add a footer to the embedded message with the start time.
         embed.set_footer(f"Start Time")

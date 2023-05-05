@@ -37,7 +37,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_get(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -67,7 +67,18 @@ class TagExtension(Extension):
                 # Update the amountUsed counter for the tag.
                 used_counter = fetch[2]
                 used_counter += 1
-                cur.execute(f"UPDATE tags SET amountUsed = ?", (used_counter,))
+
+                # Check the config to see if the keep_server_tags_separate flag is set to true.
+                if (Config.get_config()["keep_server_tags_separate"]):
+                    # Only updates the tag if they share the same name and guildID.
+                    params = (used_counter, name, str(context.guild_id),)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
+                else:
+                    # Only updates the tag if they share the same name.
+                    params = (used_counter, name,)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                
+                # Commit the changes to the database.
                 con.commit()
 
                 # Respond to the user who invoked this command with the content of the tag.
@@ -78,7 +89,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Add Command.
@@ -106,7 +117,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_add(self, context: InteractionContext, name: str, content: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -148,11 +159,11 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Delete Command.
-    Dletes the specified tag from the tag database and repsonds to the user who invoked this command accordingly.
+    Deletes the specified tag from the bot database and repsonds to the user who invoked this command accordingly.
     This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
 
     @param context The context for which this command was invoked.
@@ -169,7 +180,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_delete(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -217,7 +228,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Info Command.
@@ -238,7 +249,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_info(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -280,7 +291,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
     
     """
     Tag All Command.
@@ -294,7 +305,7 @@ class TagExtension(Extension):
         sub_cmd_description="Displays the info of every tag."
     )
     async def tag_all(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -314,6 +325,12 @@ class TagExtension(Extension):
             # Store the results of our database query.
             fetch = res.fetchall()
             
+            # Check if the list of tags is empty
+            if (not fetch):
+                # If the list of tags is empty we will respond to the user who invoked this command.
+                await context.send("There are no tags yet!")
+                return
+
             # Store a list of embeds for each page in the paginator.
             embeds = []
 
@@ -338,7 +355,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Random Command.
@@ -352,7 +369,7 @@ class TagExtension(Extension):
         sub_cmd_description="Displays the content of a random tag"
     )
     async def tag_random(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -364,10 +381,10 @@ class TagExtension(Extension):
             # With this flag enabled tags will only be pulled if they have the same guildID.
             if (Config.get_config()["keep_server_tags_separate"]):
                 # Pull a random tag with the same guildID from the database.
-                res = cur.execute(f"SELECT content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
+                res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
             else:
                 # Pull a random tag from the database.
-                res = cur.execute(f"SELECT content, amountUsed FROM tags ORDER BY RANDOM() LIMIT 1")
+                res = cur.execute(f"SELECT name, content, amountUsed FROM tags ORDER BY RANDOM() LIMIT 1")
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -376,10 +393,24 @@ class TagExtension(Extension):
             if (fetch is None):
                 await context.send("There are no tags saved to the database.")
             else:
+                # Get the tag name.
+                tagName = fetch[0]
+                
                 # Update the amountUsed counter for the tag.
-                used_counter = fetch[1]
+                used_counter = fetch[2]
                 used_counter += 1
-                cur.execute(f"UPDATE tags SET amountUsed = ?", (used_counter,))
+
+                # Check the config to see if the keep_server_tags_separate flag is set to true.
+                if (Config.get_config()["keep_server_tags_separate"]):
+                    # Only updates the tag if they share the same name and guildID.
+                    params = (used_counter, tagName, str(context.guild_id),)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
+                else:
+                    # Only updates the tag if they share the same name.
+                    params = (used_counter, tagName,)
+                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                
+                # Commit the changes to the database.
                 con.commit()
 
                 # Respond to the user who invoked this command with the content of the tag.
@@ -390,4 +421,4 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")

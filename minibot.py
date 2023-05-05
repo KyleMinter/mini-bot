@@ -9,8 +9,8 @@ from interactions import Intents
 Config.read_config()
 config = Config.get_config()
 
-# Setup the tag database.
-Database.setup_tag_database()
+# Setup the bot database.
+Database.setup_bot_database()
 
 # Create a client instance for connecting to discord.
 if (config["testing_mode_enabled"]):
@@ -41,6 +41,8 @@ async def on_ready():
 client.load_extension(name=".general", package="extensions")
 client.load_extension(name=".tags", package="extensions")
 client.load_extension(name=".blacklist", package="extensions")
+client.load_extension(name=".timezones", package="extensions")
+client.load_extension(name=".bot_removal", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

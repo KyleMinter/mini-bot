@@ -325,6 +325,12 @@ class TagExtension(Extension):
             # Store the results of our database query.
             fetch = res.fetchall()
             
+            # Check if the list of tags is empty
+            if (not fetch):
+                # If the list of tags is empty we will respond to the user who invoked this command.
+                await context.send("There are no tags yet!")
+                return
+
             # Store a list of embeds for each page in the paginator.
             embeds = []
 

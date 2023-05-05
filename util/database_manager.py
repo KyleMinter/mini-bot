@@ -64,6 +64,8 @@ class Database:
             # Create a table to contain the tags.
             cur = con.cursor()
             cur.execute("CREATE TABLE tags(name, content, authorID, guildID, date, amountUsed)")
+            cur.execute("CREATE TABLE timezones(timezone, userID, guildID)")
+            con.commit()
 
             # Close the database connection now that we are done with it.
             con.close()

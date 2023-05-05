@@ -41,6 +41,7 @@ async def on_ready():
 client.load_extension(name=".general", package="extensions")
 client.load_extension(name=".tags", package="extensions")
 client.load_extension(name=".blacklist", package="extensions")
+client.load_extension(name=".timezones", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

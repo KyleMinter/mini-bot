@@ -13,7 +13,7 @@ import interactions
 from interactions import Extension, InteractionContext, OptionType, Embed
 
 """
-A class representing an extension of the bot. This extention contains the functionality for the general slash commands provided by the bot.
+A class representing an extension of the bot. This extention contains the functionality for the timezone slash commands provided by the bot.
 """
 class TimezonesExtension(Extension):
     """

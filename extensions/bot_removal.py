@@ -10,7 +10,8 @@ from interactions import listen, Extension
 from interactions.api.events import GuildLeft, GuildUnavailable
 
 """
-A class representing an extension of the bot. This extention contains the functionality for the blacklist provided by the bot.
+A class representing an extension of the bot.
+This extention contains the functionality for the removing server specific information from the database when the bot is removed from a server.
 """
 class BotRemovalExtension(Extension):
     """

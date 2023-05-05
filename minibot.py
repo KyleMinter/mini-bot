@@ -9,8 +9,8 @@ from interactions import Intents
 Config.read_config()
 config = Config.get_config()
 
-# Setup the tag database.
-Database.setup_tag_database()
+# Setup the bot database.
+Database.setup_bot_database()
 
 # Create a client instance for connecting to discord.
 if (config["testing_mode_enabled"]):

@@ -37,7 +37,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_get(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -89,7 +89,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Add Command.
@@ -117,7 +117,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_add(self, context: InteractionContext, name: str, content: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -159,11 +159,11 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Delete Command.
-    Dletes the specified tag from the tag database and repsonds to the user who invoked this command accordingly.
+    Deletes the specified tag from the bot database and repsonds to the user who invoked this command accordingly.
     This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
 
     @param context The context for which this command was invoked.
@@ -180,7 +180,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_delete(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -228,7 +228,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Info Command.
@@ -249,7 +249,7 @@ class TagExtension(Extension):
         opt_type=OptionType.STRING
     )
     async def tag_info(self, context: InteractionContext, name: str):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -291,7 +291,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
     
     """
     Tag All Command.
@@ -305,7 +305,7 @@ class TagExtension(Extension):
         sub_cmd_description="Displays the info of every tag."
     )
     async def tag_all(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -349,7 +349,7 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")
 
     """
     Tag Random Command.
@@ -363,7 +363,7 @@ class TagExtension(Extension):
         sub_cmd_description="Displays the content of a random tag"
     )
     async def tag_random(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
 
         # Check if the connection is valid.
@@ -415,4 +415,4 @@ class TagExtension(Extension):
             con.close()
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
-            await context.send("Unable to access tag database!")
+            await context.send("Unable to access bot database!")

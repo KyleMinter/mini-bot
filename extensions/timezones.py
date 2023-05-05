@@ -61,7 +61,7 @@ class TimezonesExtension(Extension):
         # Get the timezone of the resulting location by querying the GeoName API.
         geonameTimezone = geocoder.geonames(geonameCity.geonames_id, method="details", key=api_username).timeZoneId
 
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
         
         # Check if the connection is valid.
@@ -110,7 +110,7 @@ class TimezonesExtension(Extension):
         sub_cmd_description="Displays the registered timezone for a user in the current server"
     )
     async def timezone_get(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
         
         # Check if the connection is valid.
@@ -153,7 +153,7 @@ class TimezonesExtension(Extension):
         sub_cmd_description="Lists the time for all users with registered timezones in the current server"
     )
     async def timezone_list(self, context: InteractionContext):
-        # Get a connection to the tag database.
+        # Get a connection to the bot database.
         con = Database.get_connection()
         
         # Check if the connection is valid.

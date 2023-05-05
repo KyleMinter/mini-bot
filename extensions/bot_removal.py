@@ -24,7 +24,7 @@ class BotRemovalExtension(Extension):
     async def on_guild_left(self, event: GuildLeft):
         # Check if the cause of the event was the bot being removed from a server.
         if (event.bot.get_guild(event.guild.id) is None):
-            # Get a connection to the tag database.
+            # Get a connection to the bot database.
             con = Database.get_connection()
 
             # Check if the connection is valid.

@@ -23,7 +23,7 @@ class Config:
                     "token": "token",
                     "geoname_api_username": "username",
                     "invite_oauth2_link": "oauth2_link",
-                    "tag_database_name": "database_name.db",
+                    "bot_database_name": "database_name.db",
                     "keep_server_tags_separate": True,
                     "testing_mode_enabled": False,
                     "testing_guild_id": "guild_id",

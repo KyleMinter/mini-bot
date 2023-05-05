@@ -10,7 +10,7 @@ from util.config_manager import Config
 from util.database_manager import Database
 
 import interactions
-from interactions import Extension, InteractionContext, OptionType, Embed
+from interactions import Extension, InteractionContext, OptionType
 
 """
 A class representing an extension of the bot. This extention contains the functionality for the timezone slash commands provided by the bot.

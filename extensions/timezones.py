@@ -207,9 +207,9 @@ class TimezonesExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Query the databse for any rows with the current userID and guildID.
-            params = (str(context.author_id), str(context.guild_id),)
-            res = cur.execute(f"SELECT timezone, userID FROM timezones WHERE userID = ? AND guildID = ?", params)
+            # Query the databse for any rows with the current guildID.
+            params = (str(context.guild_id),)
+            res = cur.execute(f"SELECT timezone, userID FROM timezones WHERE guildID = ?", params)
             
             # Store the results of our database query.
             fetch = res.fetchall()

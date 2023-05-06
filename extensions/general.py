@@ -125,7 +125,7 @@ class GeneralExtension(Extension):
     )
     @interactions.slash_option(
         name="question",
-        description="If specified this command will clear tags created within a server with the guildID",
+        description="An optional argument to ask the 8ball",
         required=False,
         opt_type=OptionType.STRING
     )

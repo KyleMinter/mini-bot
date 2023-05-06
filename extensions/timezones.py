@@ -133,7 +133,7 @@ class TimezonesExtension(Extension):
             else:
                 # Respond with the timezone the user has set for this server and their current time.
                 timezone = fetch[0]
-                currentTime = datetime.now(tz=ZoneInfo(timezone))
+                currentTime = datetime.now(tz=ZoneInfo(timezone)).strftime("%H:%M")
                 await context.send(f"Your timezone is: `{timezone}`\nThe current time is: `{currentTime}`")
 
             # Close the connection to the database now that we are done accessing it.
@@ -207,9 +207,9 @@ class TimezonesExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Query the databse for any rows with the current userID and guildID.
-            params = (str(context.author_id), str(context.guild_id),)
-            res = cur.execute(f"SELECT timezone, userID FROM timezones WHERE userID = ? AND guildID = ?", params)
+            # Query the databse for any rows with the current guildID.
+            params = (str(context.guild_id),)
+            res = cur.execute(f"SELECT timezone, userID FROM timezones WHERE guildID = ?", params)
             
             # Store the results of our database query.
             fetch = res.fetchall()
@@ -217,7 +217,7 @@ class TimezonesExtension(Extension):
             # Checks if the results list is empty.
             if (not fetch):
                 # If the list is empty we will send a message, to the user who invoked this command, saying so.
-                await context.send("No users have registered there timezone yet!")
+                await context.send("No users have registered their timezone yet!")
                 return
             
             # Create a dictionary to store the users with registered timezones.

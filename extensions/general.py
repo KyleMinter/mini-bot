@@ -145,3 +145,29 @@ class GeneralExtension(Extension):
 
         # Sends the message.
         await context.send(message)
+    
+    """
+    Reload Config Command.
+    Reloads the config for the bot. Only the owner of the bot can use this command
+    This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
+
+    @param context The context for which this command was invoked.
+    """
+    @interactions.slash_command(
+        name="reloadconfig",
+        description="Reloads the config for the bot. Only the owner of the bot can use this command",
+        dm_permission=True
+    )
+    async def reloadconfig(self, context: InteractionContext):
+        # Check if the user invoking this command is the owner specified in the config.
+        config = Config.get_config()
+        if (config["owner_id"] != str(context.author_id)):
+            # If the user is not the owner we will respond to the user and tell them so.
+            await context.send("You are not specified as an owner in the config!")
+            return
+        
+        # Attempt to reload the config and provide an appropirate response.
+        if (Config.reload_config()):
+            await context.send("Successfully reloaded config.")
+        else:
+            await context.send("Unable to reload config. Falling back to old config.")

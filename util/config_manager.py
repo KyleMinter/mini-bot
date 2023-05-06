@@ -27,7 +27,8 @@ class Config:
                     "keep_server_tags_separate": True,
                     "testing_mode_enabled": False,
                     "testing_guild_id": "guild_id",
-                    "blacklist": ["word1", "word2"]
+                    "blacklist": ["word1", "word2"],
+                    "owner_id": ["owner_id"]
                 }
 
     """

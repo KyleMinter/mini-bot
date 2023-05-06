@@ -42,7 +42,7 @@ client.load_extension(name=".general", package="extensions")
 client.load_extension(name=".tags", package="extensions")
 client.load_extension(name=".blacklist", package="extensions")
 client.load_extension(name=".timezones", package="extensions")
-client.load_extension(name=".bot_removal", package="extensions")
+client.load_extension(name=".database_cleanup", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

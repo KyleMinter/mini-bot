@@ -424,11 +424,13 @@ class TagExtension(Extension):
             await context.send("Unable to access bot database!")
     
     """
-    Tag Random Command.
-    Displays a random tag's content to the user who invoked this command.
+    Tag Clear Command.
+    Clears the bot database of tags that meet a specified condition. This command can only be used by the owner of the bot.
     This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
 
     @param context The context for which this command was invoked.
+    @param userid An optional argument which will cause this command to clear all tags with an author who has the specified user ID.
+    @param guildid An optional argument which will cause this command to clear all tags with the specified guild ID.
     """
     @tag_get.subcommand(
         sub_cmd_name="clear",

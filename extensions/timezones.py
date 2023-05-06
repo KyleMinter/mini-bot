@@ -133,7 +133,7 @@ class TimezonesExtension(Extension):
             else:
                 # Respond with the timezone the user has set for this server and their current time.
                 timezone = fetch[0]
-                currentTime = datetime.now(tz=ZoneInfo(timezone))
+                currentTime = datetime.now(tz=ZoneInfo(timezone[0])).strftime("%H:%M")
                 await context.send(f"Your timezone is: `{timezone}`\nThe current time is: `{currentTime}`")
 
             # Close the connection to the database now that we are done accessing it.

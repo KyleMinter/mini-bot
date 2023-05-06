@@ -11,9 +11,9 @@ from interactions.api.events import GuildLeft, MemberRemove, MemberAdd
 
 """
 A class representing an extension of the bot.
-This extention contains the functionality for the removing server specific information from the database when the bot is removed from a server.
+This extention contains the functionality for the removing server specific information from the database.
 """
-class BotRemovalExtension(Extension):
+class DatabaseCleanupExtension(Extension):
     """
     GuildLeft event listener.
     This is a callback function that is called when a GuildLeft event is triggered.

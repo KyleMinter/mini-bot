@@ -434,17 +434,17 @@ class TagExtension(Extension):
     """
     @tag_get.subcommand(
         sub_cmd_name="clear",
-        sub_cmd_description="Clears the bot database of tags that meet a specified condition. This command can only be used by the owner of the bot"
+        sub_cmd_description="Clears tags that meet a condition. Only the owner of the bot can use this command"
     )
     @interactions.slash_option(
         name="userid",
-        description="If specified this command will clear all tags who were authored by the person with the given user ID",
+        description="If specified this command will clear tags created by the person with the userID",
         required=False,
         opt_type=OptionType.STRING
     )
     @interactions.slash_option(
         name="guildid",
-        description="If specified this command will clear all tags created within a server with the given guild ID",
+        description="If specified this command will clear tags created within a server with the guildID",
         required=False,
         opt_type=OptionType.STRING
     )

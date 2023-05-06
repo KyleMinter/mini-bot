@@ -260,3 +260,74 @@ class TimezonesExtension(Extension):
         else:
             # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
             await context.send("Unable to access bot database!")
+    
+    """
+    Timezone Clear Command.
+    Clears the bot database of timezone registrations that meet a specified condition. This command can only be used by the owner of the bot.
+    This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
+
+    @param context The context for which this command was invoked.
+    @param userid An optional argument which will cause this command to clear all timezone registrations with the specified user ID.
+    @param guildid An optional argument which will cause this command to clear all timezone registrations with the specified guild ID.
+    """
+    @timezone_set.subcommand(
+        sub_cmd_name="clear",
+        sub_cmd_description="Clears timezone registrations that meet a condition. Only the owner of the bot can use this command"
+    )
+    @interactions.slash_option(
+        name="userid",
+        description="If specified this command will clear timezone registrations created by the person with the userID",
+        required=False,
+        opt_type=OptionType.STRING
+    )
+    @interactions.slash_option(
+        name="guildid",
+        description="If specified this command will clear timezone registrations created within a server with the guildID",
+        required=False,
+        opt_type=OptionType.STRING
+    )
+    async def tag_clear(self, context: InteractionContext, userid: str = "", guildid: str = ""):
+        # Check if the user invoking this command is the owner specified in the config.
+        config = Config.get_config()
+        if (config["owner_id"] != str(context.author_id)):
+            # If the user is not the owner we will respond to the user and tell them so.
+            await context.send("You are not specified as an owner in the config!")
+            return
+        
+        # Get a connection to the bot database.
+        con = Database.get_connection()
+
+        # Check if the connection is valid.
+        if (con is not None):
+            # Create a cursor to query the database.
+            cur = con.cursor()
+            
+            # Check the different combinations of options and delete the timezone registrations from the database based off of them.
+            if (userid == "" and guildid == ""):
+                # If no options are specified we will delete all timezone registrations from the database.
+                params = (str(context.guild_id),)
+                cur.execute(f"DELETE FROM timezones")
+            elif (userid != "" and guildid == ""):
+                # If a user ID is specified but not a guild ID, we will delete all timezone registrations with the specified user ID.
+                params = (userid,)
+                cur.execute(f"DELETE FROM timezones WHERE userID = ?", params)
+            elif (userid == "" and guildid != ""):
+                # If a guild ID is specified but not a user ID, we will delete all timezone registrations with the specified guild ID.
+                params = (guildid,)
+                cur.execute(f"DELETE FROM timezones WHERE guildID = ?", params)
+            else:
+                # If both a user ID and guild ID is specified, we will delete all timezone registrations with the specified user ID and guild ID.
+                params = (userid, guildid,)
+                cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", params)
+             
+            # Commit the changes to the database.
+            con.commit()
+
+            # Respond to the user who invoked this command.
+            await context.send("Cleared timezone registrations from database with specified conditions.")
+
+            # Close the connection to the database now that we are done accessing it.
+            con.close()
+        else:
+            # If we are unable to get a valid connection to the database we will respond the user who invoked this command and tell them so.
+            await context.send("Unable to access bot database!")

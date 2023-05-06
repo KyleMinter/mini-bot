@@ -414,7 +414,7 @@ class TagExtension(Extension):
                 con.commit()
 
                 # Respond to the user who invoked this command with the content of the tag.
-                content = fetch[0]
+                content = fetch[1]
                 await context.send(f"{content}")
 
             # Close the connection to the database now that we are done accessing it.

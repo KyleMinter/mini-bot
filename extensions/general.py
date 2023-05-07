@@ -7,7 +7,7 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 
 import interactions
-from interactions import InteractionContext, Extension, Embed
+from interactions import InteractionContext, Extension, Embed, OptionType
 
 """
 A class representing an extension of the bot. This extention contains the functionality for the general slash commands provided by the bot.
@@ -123,11 +123,51 @@ class GeneralExtension(Extension):
         description="Get a response from the 8ball",
         dm_permission=True
     )
-    async def eightball(self, context: InteractionContext):
+    @interactions.slash_option(
+        name="question",
+        description="An optional argument to ask the 8ball",
+        required=False,
+        opt_type=OptionType.STRING
+    )
+    async def eightball(self, context: InteractionContext, question: str = ""):
         # List of potential 8ball responses. Source: https://magic-8ball.com/magic-8-ball-answers/
         responses = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it", "As I see it, yes", "Most likely", "Outlook good",
                      "Yes", "Signs point to yes", "Reply hazy, try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again",
                      "Don't count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"]
         
-        # Sends a random response from the list.
-        await context.send(f"{random.choice(responses)}")
+        # Build a message to respond with.
+        message = ""
+        if (question != ""):
+            # If a question argument was provided we will add it to the message.
+            message = f"You asked \"`{question}`.\"\n8ball: "
+        # Get a random reponse from the list.
+        message += f"{random.choice(responses)}"
+
+        # Sends the message.
+        await context.send(message)
+    
+    """
+    Reload Config Command.
+    Reloads the config for the bot. Only the owner of the bot can use this command
+    This is function is registered as a slash command using interactions.py and it automatically called when the command is invoked by a Discord user.
+
+    @param context The context for which this command was invoked.
+    """
+    @interactions.slash_command(
+        name="reloadconfig",
+        description="Reloads the config for the bot. Only the owner of the bot can use this command",
+        dm_permission=True
+    )
+    async def reloadconfig(self, context: InteractionContext):
+        # Check if the user invoking this command is the owner specified in the config.
+        config = Config.get_config()
+        if (config["owner_id"] != str(context.author_id)):
+            # If the user is not the owner we will respond to the user and tell them so.
+            await context.send("You are not specified as an owner in the config!")
+            return
+        
+        # Attempt to reload the config and provide an appropirate response.
+        if (Config.reload_config()):
+            await context.send("Successfully reloaded config.")
+        else:
+            await context.send("Unable to reload config. Falling back to old config.")

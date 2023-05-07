@@ -1,5 +1,6 @@
 from util.config_manager import Config
 from util.database_manager import Database
+from extensions.database_cleanup import DatabaseCleanupExtension
 
 import interactions
 from interactions import Intents
@@ -19,7 +20,7 @@ if (config["testing_mode_enabled"]):
     print("Testing mode enabled.\nSlash commands will be automatically instantiated with guild ID scope specified in config.")
     client = interactions.Client(
         token=config["token"],
-        intents=Intents.new(default=True, message_content=True),
+        intents=Intents.new(default=True, message_content=True, guild_members=True),
         delete_unused_application_cmds=True,
         send_command_tracebacks=True,
         debug_scope=config["testing_guild_id"])
@@ -28,13 +29,14 @@ else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = interactions.Client(
         token=config["token"],
-        intents=Intents.new(default=True, message_content=True),
+        intents=Intents.new(default=True, message_content=True, guild_members=True),
         delete_unused_application_cmds=False,
         send_command_tracebacks=False)
 
 # Listen for ready event.
 @interactions.listen()
 async def on_ready():
+    DatabaseCleanupExtension.on_ready_cleanup(client)
     print(f"Logged in as {client.user}")
 
 # Load the extensions for the bot.
@@ -42,7 +44,7 @@ client.load_extension(name=".general", package="extensions")
 client.load_extension(name=".tags", package="extensions")
 client.load_extension(name=".blacklist", package="extensions")
 client.load_extension(name=".timezones", package="extensions")
-client.load_extension(name=".bot_removal", package="extensions")
+client.load_extension(name=".database_cleanup", package="extensions")
 
 # Start the bot and connect to discord.
 client.start()

@@ -24,10 +24,10 @@ class Config:
                     "geoname_api_username": "username",
                     "invite_oauth2_link": "oauth2_link",
                     "bot_database_name": "database_name.db",
-                    "keep_server_tags_separate": True,
                     "testing_mode_enabled": False,
                     "testing_guild_id": "guild_id",
-                    "blacklist": ["word1", "word2"]
+                    "blacklist": ["word1", "word2"],
+                    "owner_id": "owner_id"
                 }
 
     """
@@ -48,6 +48,29 @@ class Config:
                 print("Unable to read config.json. Writing a default one to the current directory.\n")
                 outfile.write(json.dumps(Config.get_default_config(), indent = 4))
                 sys.exit(0)
+    
+    """
+    Attempts to reload the config file and load the settings from it.
+    If the config is not found the deafult one will be written to the current directory and the old config will continue to be used.
+
+    @return True if the config was reloaded, False if not
+    """
+    @staticmethod
+    def reload_config():
+        print("Attempting to reload config.json file...")
+
+        # If the config file exists we will load it.
+        if os.path.exists(Config.CONFIG_FILENAME):
+            with open(Config.CONFIG_FILENAME, "r") as infile:
+                Config.config = json.load(infile)
+                print("Successfully reloaded config.json.\n")
+                return True
+        # If the config file doesn't exit we will write a default one and exit the program.
+        else:
+            with open(Config.CONFIG_FILENAME, "w") as outfile:
+                print("Unable to reload config.json. Writing a default one to the current directory and falling back to old config.\n")
+                outfile.write(json.dumps(Config.get_default_config(), indent = 4))
+                return False
 
     """
     Returns an the current config file store in memory.

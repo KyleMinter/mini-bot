@@ -1,5 +1,6 @@
 from util.config_manager import Config
 from util.database_manager import Database
+from extensions.database_cleanup import DatabaseCleanupExtension
 
 import interactions
 from interactions import Intents
@@ -35,6 +36,7 @@ else:
 # Listen for ready event.
 @interactions.listen()
 async def on_ready():
+    DatabaseCleanupExtension.on_ready_cleanup(client)
     print(f"Logged in as {client.user}")
 
 # Load the extensions for the bot.

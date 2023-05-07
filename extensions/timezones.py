@@ -286,7 +286,7 @@ class TimezonesExtension(Extension):
         required=False,
         opt_type=OptionType.STRING
     )
-    async def tag_clear(self, context: InteractionContext, userid: str = "", guildid: str = ""):
+    async def timezone_clear(self, context: InteractionContext, userid: str = "", guildid: str = ""):
         # Check if the user invoking this command is the owner specified in the config.
         config = Config.get_config()
         if (config["owner_id"] != str(context.author_id)):

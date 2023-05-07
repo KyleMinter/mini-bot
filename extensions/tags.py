@@ -45,16 +45,9 @@ class TagExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags will only be pulled if they have the same name and guildID.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # Check if any tags with the same name and guildID exists in the database.
-                params = (name, str(context.guild_id),)
-                res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE name = ? AND guildID = ?", params)
-            else:
-                # Check if any tags with the same name exists in the database.
-                params = (name,)
-                res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE name = ?", params)
+            # Check if any tags with the same name and guildID exists in the database.
+            params = (name, str(context.guild_id),)
+            res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE name = ? AND guildID = ?", params)
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -68,15 +61,9 @@ class TagExtension(Extension):
                 used_counter = fetch[2]
                 used_counter += 1
 
-                # Check the config to see if the keep_server_tags_separate flag is set to true.
-                if (Config.get_config()["keep_server_tags_separate"]):
-                    # Only updates the tag if they share the same name and guildID.
-                    params = (used_counter, name, str(context.guild_id),)
-                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
-                else:
-                    # Only updates the tag if they share the same name.
-                    params = (used_counter, name,)
-                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                # Only updates the tag if they share the same name and guildID.
+                params = (used_counter, name, str(context.guild_id),)
+                cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
                 
                 # Commit the changes to the database.
                 con.commit()
@@ -125,16 +112,9 @@ class TagExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags can have the same name as long as they aren't created in the same server.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # Check if any tags with the same name and guildID already exists in the database.
-                params = (name, str(context.guild_id),)
-                res = cur.execute(f"SELECT name FROM tags WHERE name = ? AND guildID = ?", params)
-            else:
-                # Check if any tags with the same name already exists in the database.
-                params = (name,)
-                res = cur.execute(f"SELECT name FROM tags WHERE name = ?", params)
+            # Check if any tags with the same name and guildID already exists in the database.
+            params = (name, str(context.guild_id),)
+            res = cur.execute(f"SELECT name FROM tags WHERE name = ? AND guildID = ?", params)
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -187,18 +167,13 @@ class TagExtension(Extension):
         if (con is not None):
             # Create a cursor to query the database.
             cur = con.cursor()
-            
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags will only be pulled if they have the same name and guildID.
+
+            # Gets the config file.
             config = Config.get_config()
-            if (config["keep_server_tags_separate"]):
-                # Check if any tags with the same name and guildID exists in the database.
-                params = (name, str(context.guild_id),)
-                res = cur.execute(f"SELECT authorID FROM tags WHERE name = ? AND guildID = ?", params)
-            else:
-                # Check if any tags with the same name exists in the database.
-                params = (name,)
-                res = cur.execute(f"SELECT authorID FROM tags WHERE name = ?", params)
+
+            # Check if any tags with the same name and guildID exists in the database.
+            params = (name, str(context.guild_id),)
+            res = cur.execute(f"SELECT authorID FROM tags WHERE name = ? AND guildID = ?", params)
 
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -208,16 +183,9 @@ class TagExtension(Extension):
                 # If the the specified tag is not in the database we will respond to the user who invoked this command and tell them so.
                 await context.send(f"No tags with name '{name}' found!")
             elif (fetch[0] == str(context.author_id) or config["owner_id"] == str(context.author_id)):
-                # Check the config to see if the keep_server_tags_separate flag is set to true.
-                # With this flag enabled tags will only be deleted if they have the same name and guildID.
-                if (config["keep_server_tags_separate"]):
-                    # Delete the tag with the same name and guildID from the database.
-                    params = (name, str(context.guild_id),)
-                    cur.execute(f"DELETE FROM tags WHERE name = ? AND guildID = ?", params)
-                else:
-                    # Delete the tag with the same name from the database.
-                    params = (name,)
-                    cur.execute(f"DELETE FROM tags WHERE name = ?", params)
+                # Delete the tag with the same name and guildID from the database.
+                params = (name, str(context.guild_id),)
+                cur.execute(f"DELETE FROM tags WHERE name = ? AND guildID = ?", params)
                 
                 # Commit the changes to the database.
                 con.commit()
@@ -261,16 +229,9 @@ class TagExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags will only be pulled if they have the same name and guildID.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # Check if any tags with the same name and guildID exists in the database.
-                params = (name, str(context.guild_id),)
-                res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags WHERE name = ? AND guildID = ?", params)
-            else:
-                # Check if any tags with the same name exists in the database.
-                params = (name,)
-                res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags WHERE name = ?", params)
+            # Check if any tags with the same name and guildID exists in the database.
+            params = (name, str(context.guild_id),)
+            res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags WHERE name = ? AND guildID = ?", params)
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -317,14 +278,8 @@ class TagExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
 
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags will only be pulled if they have the same guildID.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # Pull all of the tags from database with the same guildID.
-                res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags WHERE guildID = ?", (str(context.guild_id),))
-            else:
-                # Pull all of the tags from database.
-                res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags")
+            # Pull all of the tags from database with the same guildID.
+            res = cur.execute(f"SELECT name, content, authorID, guildID, date, amountUsed FROM tags WHERE guildID = ?", (str(context.guild_id),))
             
             # Store the results of our database query.
             fetch = res.fetchall()
@@ -381,14 +336,8 @@ class TagExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            # With this flag enabled tags will only be pulled if they have the same guildID.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # Pull a random tag with the same guildID from the database.
-                res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
-            else:
-                # Pull a random tag from the database.
-                res = cur.execute(f"SELECT name, content, amountUsed FROM tags ORDER BY RANDOM() LIMIT 1")
+            # Pull a random tag with the same guildID from the database.
+            res = cur.execute(f"SELECT name, content, amountUsed FROM tags WHERE guildID = ? ORDER BY RANDOM() LIMIT 1", (str(context.guild_id),))
             
             # Store the results of our database query.
             fetch = res.fetchone()
@@ -403,16 +352,8 @@ class TagExtension(Extension):
                 # Update the amountUsed counter for the tag.
                 used_counter = fetch[2]
                 used_counter += 1
-
-                # Check the config to see if the keep_server_tags_separate flag is set to true.
-                if (Config.get_config()["keep_server_tags_separate"]):
-                    # Only updates the tag if they share the same name and guildID.
-                    params = (used_counter, tagName, str(context.guild_id),)
-                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
-                else:
-                    # Only updates the tag if they share the same name.
-                    params = (used_counter, tagName,)
-                    cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ?", params)
+                params = (used_counter, tagName, str(context.guild_id),)
+                cur.execute(f"UPDATE tags SET amountUsed = ? WHERE name = ? AND guildID = ?", params)
                 
                 # Commit the changes to the database.
                 con.commit()

@@ -1,3 +1,4 @@
+from ast import List
 import os
 import sys
 
@@ -6,8 +7,9 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-from interactions import listen, Extension
-from interactions.api.events import GuildLeft, MemberRemove, MemberAdd
+import interactions
+from interactions import listen, Extension, Guild
+from interactions.api.events import GuildLeft, MemberRemove, Ready
 
 """
 A class representing an extension of the bot.
@@ -31,10 +33,8 @@ class DatabaseCleanupExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
 
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # If the flag is set to true we will delete all tags from this server.
-                cur.execute(f"DELETE FROM tags WHERE guildID = ?", (str(event.guild.id),))
+            # Delete all tags from this server.
+            cur.execute(f"DELETE FROM tags WHERE guildID = ?", (str(event.guild.id),))
             
             # Delete all timezone registrations from this server.
             cur.execute(f"DELETE FROM timezones WHERE guildID = ?", (str(event.guild.id),))
@@ -55,15 +55,8 @@ class DatabaseCleanupExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
 
-            # Check the config to see if the keep_server_tags_separate flag is set to true.
-            if (Config.get_config()["keep_server_tags_separate"]):
-                # If the flag is set to true we will delete, all tags created by this user from this server.
-                cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
-            else:
-                # If the flag is set to false we will check if this user is in any other servers the bot has access to.
-                if (event.bot.get_user(event.member.id) is None):
-                    # If the user isn't in any servers the bot has access to, we will delete all the tags created by this user.
-                    cur.execute(f"DELETE FROM tags WHERE authorID = ?", (str(event.member.id),))
+            # Delete all tags created by this user from this server.
+            cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
             
             # Delete all timezone registrations for this user from this server.
             cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))

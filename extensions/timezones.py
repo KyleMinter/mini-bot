@@ -227,7 +227,18 @@ class TimezonesExtension(Extension):
             for timezone in fetch:
                 # Get the current time and username for all people with registered timezones.
                 time = datetime.now(tz=ZoneInfo(timezone[0])).strftime("%H:%M")
-                user_name = context.client.get_user(timezone[1]).display_name
+
+                # Get the user of the timezone.
+                user_name = ""
+                user = context.client.get_user(timezone[1])
+
+                # Check if the user is None.
+                if (user is not None):
+                    # If the user is not None we will get the user's display name.
+                    user_name = user.display_name
+                else:
+                    # If the user is None we will display the user's ID.
+                    user_name = f"User ID: {timezone[1]}"
 
                 # Put the users in a dictionary.
                 if (time in user_dict):

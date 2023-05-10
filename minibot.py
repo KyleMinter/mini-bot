@@ -21,14 +21,16 @@ if (config["testing_mode_enabled"]):
         intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
         delete_unused_application_cmds=True,
         send_command_tracebacks=True,
-        debug_scope=config["testing_guild_id"])
+        debug_scope=config["testing_guild_id"],
+        fetch_members=True)
 else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = Client(
         token=config["token"],
         intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
         delete_unused_application_cmds=True,
-        send_command_tracebacks=False)
+        send_command_tracebacks=False,
+        fetch_members=True)
 
 # Listen for ready event.
 @listen()

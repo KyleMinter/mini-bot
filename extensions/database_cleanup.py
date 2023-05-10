@@ -7,9 +7,8 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-import interactions
-from interactions import listen, Extension, Guild
-from interactions.api.events import GuildLeft, MemberRemove, Ready
+from interactions import listen, Extension, Client
+from interactions.api.events import GuildLeft, MemberRemove
 
 """
 A class representing an extension of the bot.
@@ -79,7 +78,7 @@ class DatabaseCleanupExtension(Extension):
     This function is called when the On Ready event is triggered to ensure that no uneccesary data wasn't left unremoved during the bot's downtime.
     """
     @staticmethod
-    def on_ready_cleanup(client: interactions.Client):
+    def on_ready_cleanup(client: Client):
 
         # Get a connection to the bot database.
         con = Database.get_connection()

@@ -9,8 +9,7 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-import interactions
-from interactions import Extension, InteractionContext, OptionType, slash_command, slash_option
+from interactions import Extension, InteractionContext, OptionType, slash_command, slash_option, auto_defer
 
 """
 A class representing an extension of the bot. This extention contains the functionality for the timezone slash commands provided by the bot.
@@ -35,7 +34,7 @@ class TimezonesExtension(Extension):
         required=True,
         opt_type=OptionType.STRING
     )
-    @interactions.auto_defer()
+    @auto_defer()
     async def timezone_set(self, context: InteractionContext, city: str):
         # Gets the GeoName API username from the config.
         api_username = Config.get_config()["geoname_api_username"]

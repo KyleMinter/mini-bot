@@ -7,7 +7,6 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-import interactions
 from interactions import Extension, InteractionContext, OptionType, Embed, slash_command, slash_option
 from interactions.ext.paginators import Paginator
 

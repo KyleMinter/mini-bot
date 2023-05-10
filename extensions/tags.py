@@ -241,13 +241,20 @@ class TagExtension(Extension):
                 # If the the specified tag is not in the database we will respond to the user who invoked this command and tell them so.
                 await context.send(f"No tag with name '{name}' found!")
             else:
+                # Create an embed to display the info of the tag in.
+                embed = Embed()
+                embed.add_field(f"Name: {fetch[0]}", f"Date Created: {fetch[4]}\nTimes Used: {fetch[5]}\n Content: {fetch[1]}")
+
                 # Get the user object of the author of the tag.
                 authorUser = context.client.get_user(fetch[2])
 
-                # Create an embedded message to display the info of the tag in.
-                embed = Embed()
-                embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
-                embed.add_field(f"Name: {fetch[0]}", f"Date Created: {fetch[4]}\nTimes Used: {fetch[5]}\n Content: {fetch[1]}")
+                # Check if the user object is None.
+                if (authorUser is not None):
+                    # If the user object isn't None we will set the author of the embed to be the author's name and avatar icon.
+                    embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
+                else:
+                    # If the user object is None we will set the author of the embed to be the user ID of the author.
+                    embed.set_author(f"Author ID: {fetch[2]}", icon_url=context.client.user.display_avatar.url)
 
                 # Respond to the user who invoked this command with the embedded message.
                 await context.send(embeds=embed)
@@ -296,13 +303,20 @@ class TagExtension(Extension):
 
             # Loop over every row in the fetched results.
             for tag in fetch:
+                # Create an embed to display the info of the tag in.
+                embed = Embed()
+                embed.add_field(f"Name: {tag[0]}", f"Date Created: {tag[4]}\nTimes Used: {tag[5]}\n Content: {tag[1]}")
+
                 # Get the user object of the author of the tag.
                 authorUser = context.client.get_user(tag[2])
 
-                # Create an embed to display the info of the tag in.
-                embed = Embed()
-                embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
-                embed.add_field(f"Name: {tag[0]}", f"Date Created: {tag[4]}\nTimes Used: {tag[5]}\n Content: {tag[1]}")
+                # Check if the user object is None.
+                if (authorUser is not None):
+                    # If the user object isn't None we will set the author of the embed to be the author's name and avatar icon.
+                    embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
+                else:
+                    # If the user object is None we will set the author of the embed to be the user ID of the author.
+                    embed.set_author(f"Author ID: {tag[2]}", icon_url=context.client.user.display_avatar.url)
 
                 # Add the embed to the list of embeds.
                 embeds.append(embed)

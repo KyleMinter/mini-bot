@@ -53,25 +53,27 @@ class DatabaseCleanupExtension(Extension):
     """
     @listen(MemberRemove)
     async def on_member_remove(self, event: MemberRemove):
-        # Get a connection to the bot database.
-        con = Database.get_connection()
+        # Checks if the "clean_user_data" flag is enabled in the config.
+        if (Config.get_config["clean_user_data"]):
+            # Get a connection to the bot database.
+            con = Database.get_connection()
 
-        # Check if the connection is valid.
-        if (con is not None):
-            # Create a cursor to query the database.
-            cur = con.cursor()
+            # Check if the connection is valid.
+            if (con is not None):
+                # Create a cursor to query the database.
+                cur = con.cursor()
 
-            # Delete all tags created by this user from this server.
-            cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
-            
-            # Delete all timezone registrations for this user from this server.
-            cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
+                # Delete all tags created by this user from this server.
+                cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
+                
+                # Delete all timezone registrations for this user from this server.
+                cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
 
-            # Commit the changes to the database.
-            con.commit()
+                # Commit the changes to the database.
+                con.commit()
 
-            # Close the connection to the database now that we are done accessing it.
-            con.close()
+                # Close the connection to the database now that we are done accessing it.
+                con.close()
 
     """
     Deletes server specific information from the bot database for servers that the bot is no longer in.

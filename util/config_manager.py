@@ -24,6 +24,7 @@ class Config:
                     "geoname_api_username": "username",
                     "invite_oauth2_link": "oauth2_link",
                     "bot_database_name": "database_name.db",
+                    "clean_user_data": False,
                     "testing_mode_enabled": False,
                     "testing_guild_id": "guild_id",
                     "blacklist": ["word1", "word2"],

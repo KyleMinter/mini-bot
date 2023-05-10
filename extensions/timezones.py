@@ -10,7 +10,7 @@ from util.config_manager import Config
 from util.database_manager import Database
 
 import interactions
-from interactions import Extension, InteractionContext, OptionType
+from interactions import Extension, InteractionContext, OptionType, slash_command, slash_option
 
 """
 A class representing an extension of the bot. This extention contains the functionality for the timezone slash commands provided by the bot.
@@ -24,14 +24,12 @@ class TimezonesExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The name of the nearest large city.
     """
-    @interactions.slash_command(
-        name="server",
-        group_name="timezone",
-        dm_permission=False,
-        sub_cmd_name="set",
-        sub_cmd_description="Registers the timezone for a user in the current server"
+    @slash_command(
+        name="timezone_set",
+        description="Registers the timezone for a user in the current server",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="city",
         description="The name of the nearest large city",
         required=True,
@@ -106,9 +104,10 @@ class TimezonesExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @timezone_set.subcommand(
-        sub_cmd_name="get",
-        sub_cmd_description="Displays the registered timezone for a user in the current server"
+    @slash_command(
+        name="timezone_get",
+        description="Displays the registered timezone for a user in the current server",
+        dm_permission=False
     )
     async def timezone_get(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -149,9 +148,10 @@ class TimezonesExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @timezone_set.subcommand(
-        sub_cmd_name="remove",
-        sub_cmd_description="Removes the registered timezone for a user in the current server"
+    @slash_command(
+        name="timezone_remove",
+        description="Removes the registered timezone for a user in the current server",
+        dm_permission=False
     )
     async def timezone_remove(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -194,9 +194,10 @@ class TimezonesExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @timezone_set.subcommand(
-        sub_cmd_name="list",
-        sub_cmd_description="Lists the time for all users with registered timezones in the current server"
+    @slash_command(
+        name="timezone_list",
+        description="Lists the time for all users with registered timezones in the current server",
+        dm_permission=False
     )
     async def timezone_list(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -270,17 +271,18 @@ class TimezonesExtension(Extension):
     @param userid An optional argument which will cause this command to clear all timezone registrations with the specified user ID.
     @param guildid An optional argument which will cause this command to clear all timezone registrations with the specified guild ID.
     """
-    @timezone_set.subcommand(
-        sub_cmd_name="clear",
-        sub_cmd_description="Clears timezone registrations that meet a condition. Only the owner of the bot can use this command"
+    @slash_command(
+        name="timezone_clear",
+        description="Clears timezone registrations that meet a condition. Only the owner of the bot can use this command",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="userid",
         description="If specified this command will clear timezone registrations created by the person with the userID",
         required=False,
         opt_type=OptionType.STRING
     )
-    @interactions.slash_option(
+    @slash_option(
         name="guildid",
         description="If specified this command will clear timezone registrations created within a server with the guildID",
         required=False,

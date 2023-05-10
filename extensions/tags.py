@@ -8,7 +8,7 @@ from util.config_manager import Config
 from util.database_manager import Database
 
 import interactions
-from interactions import Extension, InteractionContext, OptionType, Embed
+from interactions import Extension, InteractionContext, OptionType, Embed, slash_command, slash_option
 from interactions.ext.paginators import Paginator
 
 """
@@ -23,14 +23,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @interactions.slash_command(
-        name="server",
-        group_name="tag",
-        dm_permission=False,
-        sub_cmd_name="get",
-        sub_cmd_description="Displays the specified tag's content"
+    @slash_command(
+        name="tag_get",
+        description="Displays the specified tag's content",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -87,17 +85,18 @@ class TagExtension(Extension):
     @param name The name of the tag.
     @param content The content of the tag.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="add",
-        sub_cmd_description="Creates a tag with a given name and content"
+    @slash_command(
+        name="tag_add",
+        description="Creates a tag with a given name and content",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The name of the tag",
         required=True,
         opt_type=OptionType.STRING
     )
-    @interactions.slash_option(
+    @slash_option(
         name="content",
         description="The content of the tag",
         required=True,
@@ -149,11 +148,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="delete",
-        sub_cmd_description="Deletes the specified tag"
+    @slash_command(
+        name="tag_delete",
+        description="Deletes the specified tag",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -210,11 +210,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="info",
-        sub_cmd_description="Displays the info about a specified tag"
+    @slash_command(
+        name="tag_info",
+        description="Displays the info about a specified tag",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -265,9 +266,10 @@ class TagExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="all",
-        sub_cmd_description="Displays the info of every tag."
+    @slash_command(
+        name="tag_all",
+        description="Displays the info of every tag",
+        dm_permission=False
     )
     async def tag_all(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -323,9 +325,10 @@ class TagExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="random",
-        sub_cmd_description="Displays the content of a random tag"
+    @slash_command(
+        name="tag_random",
+        description="Displays the content of a random tag",
+        dm_permission=False
     )
     async def tag_random(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -377,17 +380,18 @@ class TagExtension(Extension):
     @param userid An optional argument which will cause this command to clear all tags with an author who has the specified user ID.
     @param guildid An optional argument which will cause this command to clear all tags with the specified guild ID.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="clear",
-        sub_cmd_description="Clears tags that meet a condition. Only the owner of the bot can use this command"
+    @slash_command(
+        name="tag_clear",
+        description="Clears tags that meet a condition. Only the owner of the bot can use this command",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="userid",
         description="If specified this command will clear tags created by the person with the userID",
         required=False,
         opt_type=OptionType.STRING
     )
-    @interactions.slash_option(
+    @slash_option(
         name="guildid",
         description="If specified this command will clear tags created within a server with the guildID",
         required=False,

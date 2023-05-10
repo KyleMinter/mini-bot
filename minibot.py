@@ -18,16 +18,15 @@ if (config["testing_mode_enabled"]):
     print("Testing mode enabled.\nSlash commands will be automatically instantiated with guild ID scope specified in config.")
     client = Client(
         token=config["token"],
-        intents=Intents.new(default=True, message_content=True, guild_members=True),
+        intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
         delete_unused_application_cmds=True,
         send_command_tracebacks=True,
         debug_scope=config["testing_guild_id"])
-    print("")
 else:
     # If the testing mode is disabled in the config we will setup the client as normal.
     client = Client(
         token=config["token"],
-        intents=Intents.new(default=True, message_content=True, guild_members=True),
+        intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
         delete_unused_application_cmds=True,
         send_command_tracebacks=False)
 
@@ -35,6 +34,7 @@ else:
 @listen()
 async def on_ready():
     DatabaseCleanupExtension.on_ready_cleanup(client)
+    print("")
     print(f"Logged in as {client.user}")
 
 # Load the extensions for the bot.

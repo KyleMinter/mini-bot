@@ -15,8 +15,7 @@ Database.setup_bot_database()
 
 # Create a client instance for connecting to discord.
 if (config["testing_mode_enabled"]):
-    # If the testing mode is enabled in the config we will set the debug scope to the guild ID specified in the config
-    # and enable the deletion of unused application commands along with the sending of command tracebacks.
+    # If the testing mode is enabled in the config we will set the debug scope to the guild ID specified in the config and enable the sending of command tracebacks.
     print("Testing mode enabled.\nSlash commands will be automatically instantiated with guild ID scope specified in config.")
     client = interactions.Client(
         token=config["token"],
@@ -30,7 +29,7 @@ else:
     client = interactions.Client(
         token=config["token"],
         intents=Intents.new(default=True, message_content=True, guild_members=True),
-        delete_unused_application_cmds=False,
+        delete_unused_application_cmds=True,
         send_command_tracebacks=False)
 
 # Listen for ready event.

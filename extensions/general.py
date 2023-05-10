@@ -138,7 +138,7 @@ class GeneralExtension(Extension):
         message = ""
         if (question != ""):
             # If a question argument was provided we will add it to the message.
-            message = f"You asked \"`{question}`.\"\n8ball: "
+            message = f"You asked \"`{question}`\"\n8ball: "
         # Get a random reponse from the list.
         message += f"{random.choice(responses)}"
 

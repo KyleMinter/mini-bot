@@ -94,7 +94,7 @@ class DatabaseCleanupExtension(Extension):
 
             # Create two temporary tables in the database to store the guild IDs and user IDs for all the servers the bot is currently in.
             cur.execute("CREATE TABLE guilds(guildID)")
-            cur.execute("CREATE TABLE users(userID)")
+            cur.execute("CREATE TABLE users(userID, guildID)")
             
             # Get a list of guilds the bot is in.
             guilds = client.guilds
@@ -104,24 +104,28 @@ class DatabaseCleanupExtension(Extension):
                 # Insert the guild ID for this guild into the temporary table.
                 cur.execute("INSERT INTO guilds VALUES (?)", (str(guild.id),))
 
-                # Get a list of users in this server.
-                users = guild.members
-                # Loop over the list of users.
-                for user in users:
-                    # For each user in a guild we will insert the user IDs into the temporary table.
-                    cur.execute("INSERT INTO users VALUES (?)", (str(user.id),))
+                # Check if the "clean_user_data" flag is enabled in the config.
+                if (Config.get_config()["clean_user_data"]):
+                    # Get a list of users in this server.
+                    users = guild.members
+
+                    # Loop over the list of users.
+                    for user in users:
+                        # For each user in a guild we will insert the user IDs into the temporary table.
+                        cur.execute("INSERT INTO users VALUES (?, ?)", (str(user.id), str(guild.id),))
+                    
+                    # If the flag is enabled we will delete all tags and timezone registrations from users not available to the bot.
+                    cur.execute("DELETE FROM tags WHERE authorID NOT IN (SELECT u.userID FROM users u WHERE guildID = ?)", (str(guild.id),))
+                    cur.execute("DELETE FROM timezones WHERE userID NOT IN (SELECT u.userID FROM users u WHERE guildID = ?)", (str(guild.id),))
+
+                    # Clear the temporary table.
+                    cur.execute("DELETE FROM users")
 
             # Delete all tags from the database that don't have an author ID or guild ID present in the temporary table.
             cur.execute("DELETE FROM tags WHERE guildID NOT IN (SELECT g.guildID FROM guilds g)")
 
             # Delete all timezone registrations from the database that don't have a userID or guild ID present in the temporary table.
             cur.execute("DELETE FROM timezones WHERE guildID NOT IN (SELECT g.guildID FROM guilds g)")
-
-            # Check if the "clean_user_data" flag is enabled in the config.
-            if (Config.get_config()["clean_user_data"]):
-                # If the flag is enabled we will delete all tags and timezone registrations from users not available to the bot.
-                cur.execute("DELETE FROM tags WHERE authorID NOT IN (SELECT u.userID FROM users u)")
-                cur.execute("DELETE FROM timezones WHERE userID NOT IN (SELECT u.userID FROM users u)")
 
             # Delete the temporary tables.
             cur.execute("DROP TABLE guilds")

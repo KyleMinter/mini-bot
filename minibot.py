@@ -13,24 +13,19 @@ config = Config.get_config()
 Database.setup_bot_database()
 
 # Create a client instance for connecting to discord.
+client = Client(
+        token=config["token"],
+        intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
+        delete_unused_application_cmds=True,
+        fetch_members=True,
+        send_command_tracebacks=False)
+
+# Check if the testing mode is enabled in the config.
 if (config["testing_mode_enabled"]):
-    # If the testing mode is enabled in the config we will set the debug scope to the guild ID specified in the config and enable the sending of command tracebacks.
+    # If the testing mode is enabled we will set the debug scope to the guild ID specified in the config and enable the sending of command tracebacks.
     print("Testing mode enabled.\nSlash commands will be automatically instantiated with guild ID scope specified in config.")
-    client = Client(
-        token=config["token"],
-        intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
-        delete_unused_application_cmds=True,
-        send_command_tracebacks=True,
-        debug_scope=config["testing_guild_id"],
-        fetch_members=True)
-else:
-    # If the testing mode is disabled in the config we will setup the client as normal.
-    client = Client(
-        token=config["token"],
-        intents=Intents.new(default=True, message_content=True, guild_members=True, direct_messages=True),
-        delete_unused_application_cmds=True,
-        send_command_tracebacks=False,
-        fetch_members=True)
+    client.send_command_tracebacks=True
+    client.debug_scope=config["testing_guild_id"]
 
 # Listen for ready event.
 @listen()

@@ -6,8 +6,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 from util.config_manager import Config
 
-import interactions
-from interactions import InteractionContext, Extension, Embed, OptionType
+from interactions import InteractionContext, Extension, Embed, OptionType, slash_command, slash_option
 
 """
 A class representing an extension of the bot. This extention contains the functionality for the general slash commands provided by the bot.
@@ -20,7 +19,7 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="about",
         description="Display the credits for the bot",
         dm_permission=True
@@ -52,7 +51,7 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="invite",
         description="Invite this bot to another server",
         dm_permission=True
@@ -82,7 +81,7 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="coinflip",
         description="Flip a coin and see the results",
         dm_permission=True
@@ -102,7 +101,7 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="cringe",
         description="Get a percentage of how cringe you are",
         dm_permission=True
@@ -118,12 +117,12 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="8ball",
         description="Get a response from the 8ball",
         dm_permission=True
     )
-    @interactions.slash_option(
+    @slash_option(
         name="question",
         description="An optional argument to ask the 8ball",
         required=False,
@@ -139,7 +138,7 @@ class GeneralExtension(Extension):
         message = ""
         if (question != ""):
             # If a question argument was provided we will add it to the message.
-            message = f"You asked \"`{question}`.\"\n8ball: "
+            message = f"You asked \"`{question}`\"\n8ball: "
         # Get a random reponse from the list.
         message += f"{random.choice(responses)}"
 
@@ -153,7 +152,7 @@ class GeneralExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @interactions.slash_command(
+    @slash_command(
         name="reloadconfig",
         description="Reloads the config for the bot. Only the owner of the bot can use this command",
         dm_permission=True

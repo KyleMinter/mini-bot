@@ -32,6 +32,7 @@ The default `config.json` will contain the following:
 "geoname_api_username": "username",
 "invite_oauth2_link": "oauth2_link",
 "bot_database_name": "database_name.db",
+"clean_user_data": False,
 "testing_mode_enabled": False,
 "testing_guild_id": "guild_id",
 "blacklist": ["word1", "word2"],
@@ -43,6 +44,7 @@ The following describes the function each field in the config file:
 * **geoname_api_username:** This is the username of the GeoNames account used to access the GeoNames geographical database. If this field is not provided or is otherwise invalid, the timezone registration feature won't work. You can create a GeoNames account [here](http://www.geonames.org/).
 * **invite_oauth2_link:** This is the link generated at the [Discord Developer Portal](https://discord.com/developers/applications) under the `OAuth2`->`URL Generator` page. The link provided here will be provided when a user invokes the `invite` command (If no link is provided, then a predefined message will be sent). When generating the `OAuth2` link, the scopes and bot permissions you choose to include is ultimately up to you, but it is imperitive that the `bot` and `applications.commands` scopes are enabled.
 * **bot_database_name:** This is the name of the database file that will store timezone and tag information for the bot.
+* **clean_user_data:** This flag determines whether or not user specific data (tags & timezone registrations) are automatically removed from the bot database when a user is removed from a server.
 * **testing_mode_enabled:** This flag determines whether or not the bot is in testing mode. While in testing mode unused application commands will automatically be deleted from Discord, and global commands will be synced to the provided `guild ID` for quicker command updates. The testing mode is generally only used during development and not during normal operation.
 * **testing_guild_id:** This is the `guild ID` of the server for which global commands will be synced to when the testing mode is enabled. This can be obtained by enabling `Developer Mode`, under the `Advanced` tab in the Discord settings, and then right clicking on a server and selecting `Copy Server ID`.
 * **blacklist:** This is a list of words to prevent from being sent by users. If a user sends a message containing any of the words in this list, the message will be automatically deleted. You can add as many words to the blacklist as you'd like.

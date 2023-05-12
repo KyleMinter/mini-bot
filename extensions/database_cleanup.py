@@ -1,4 +1,3 @@
-from ast import List
 import os
 import sys
 
@@ -7,9 +6,8 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-import interactions
-from interactions import listen, Extension, Guild
-from interactions.api.events import GuildLeft, MemberRemove, Ready
+from interactions import listen, Extension, Client
+from interactions.api.events import GuildLeft, MemberRemove
 
 """
 A class representing an extension of the bot.
@@ -54,33 +52,34 @@ class DatabaseCleanupExtension(Extension):
     """
     @listen(MemberRemove)
     async def on_member_remove(self, event: MemberRemove):
-        # Get a connection to the bot database.
-        con = Database.get_connection()
+        # Checks if the "clean_user_data" flag is enabled in the config.
+        if (Config.get_config["clean_user_data"]):
+            # Get a connection to the bot database.
+            con = Database.get_connection()
 
-        # Check if the connection is valid.
-        if (con is not None):
-            # Create a cursor to query the database.
-            cur = con.cursor()
+            # Check if the connection is valid.
+            if (con is not None):
+                # Create a cursor to query the database.
+                cur = con.cursor()
 
-            # Delete all tags created by this user from this server.
-            cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
-            
-            # Delete all timezone registrations for this user from this server.
-            cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
+                # Delete all tags created by this user from this server.
+                cur.execute(f"DELETE FROM tags WHERE authorID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
+                
+                # Delete all timezone registrations for this user from this server.
+                cur.execute(f"DELETE FROM timezones WHERE userID = ? AND guildID = ?", (str(event.member.id), str(event.guild.id),))
 
-            # Commit the changes to the database.
-            con.commit()
+                # Commit the changes to the database.
+                con.commit()
 
-            # Close the connection to the database now that we are done accessing it.
-            con.close()
+                # Close the connection to the database now that we are done accessing it.
+                con.close()
 
     """
-    Deletes server specific information from the bot database for servers that the bot is no longer in.
+    Deletes server and user specific information from the bot database for servers and users that are unavailable to the bot.
     This function is called when the On Ready event is triggered to ensure that no uneccesary data wasn't left unremoved during the bot's downtime.
     """
     @staticmethod
-    def on_ready_cleanup(client: interactions.Client):
-
+    def on_ready_cleanup(client: Client):
         # Get a connection to the bot database.
         con = Database.get_connection()
 
@@ -89,28 +88,48 @@ class DatabaseCleanupExtension(Extension):
             # Create a cursor to query the database.
             cur = con.cursor()
             
-            # Make sure the temporary table we are going to create, doesn't already exist.
-            cur.execute("DROP TABLE IF EXISTS temp")
+            # Make sure the temporary tables we are going to create, don't already exist.
+            cur.execute("DROP TABLE IF EXISTS guilds")
+            cur.execute("DROP TABLE IF EXISTS users")
 
-            # Create a temporary table in the database to store the guild IDs for all the servers the bot is currently in.
-            cur.execute("CREATE TABLE temp(guildID)")
+            # Create two temporary tables in the database to store the guild IDs and user IDs for all the servers the bot is currently in.
+            cur.execute("CREATE TABLE guilds(guildID)")
+            cur.execute("CREATE TABLE users(userID, guildID)")
             
             # Get a list of guilds the bot is in.
             guilds = client.guilds
 
             # Loop over the list of guilds.
             for guild in guilds:
-                # For each guild we will insert it's ID into the temporary table.
-                cur.execute("INSERT INTO temp VALUES (?)", (str(guild.id),))
+                # Insert the guild ID for this guild into the temporary table.
+                cur.execute("INSERT INTO guilds VALUES (?)", (str(guild.id),))
 
-            # Delete all tags from the database that don't have a guild ID present in the temporary table.
-            cur.execute("DELETE FROM tags WHERE guildID NOT IN (SELECT f.guildID FROM temp f)")
+                # Check if the "clean_user_data" flag is enabled in the config.
+                if (Config.get_config()["clean_user_data"]):
+                    # Get a list of users in this server.
+                    users = guild.members
 
-            # Delete all timezone registrations from the database that don't have a guild ID present in the temporary table.
-            cur.execute("DELETE FROM timezones WHERE guildID NOT IN (SELECT f.guildID FROM temp f)")
+                    # Loop over the list of users.
+                    for user in users:
+                        # For each user in a guild we will insert the user IDs into the temporary table.
+                        cur.execute("INSERT INTO users VALUES (?, ?)", (str(user.id), str(guild.id),))
+                    
+                    # If the flag is enabled we will delete all tags and timezone registrations from users not available to the bot.
+                    cur.execute("DELETE FROM tags WHERE authorID NOT IN (SELECT u.userID FROM users u WHERE guildID = ?)", (str(guild.id),))
+                    cur.execute("DELETE FROM timezones WHERE userID NOT IN (SELECT u.userID FROM users u WHERE guildID = ?)", (str(guild.id),))
 
-            # Delete the temporary table.
-            cur.execute("DROP TABLE temp")
+                    # Clear the temporary table.
+                    cur.execute("DELETE FROM users")
+
+            # Delete all tags from the database that don't have an author ID or guild ID present in the temporary table.
+            cur.execute("DELETE FROM tags WHERE guildID NOT IN (SELECT g.guildID FROM guilds g)")
+
+            # Delete all timezone registrations from the database that don't have a userID or guild ID present in the temporary table.
+            cur.execute("DELETE FROM timezones WHERE guildID NOT IN (SELECT g.guildID FROM guilds g)")
+
+            # Delete the temporary tables.
+            cur.execute("DROP TABLE guilds")
+            cur.execute("DROP TABLE users")
             
             # Commit the changes to the database.
             con.commit()

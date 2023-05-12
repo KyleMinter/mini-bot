@@ -7,8 +7,7 @@ sys.path.append(parent_dir)
 from util.config_manager import Config
 from util.database_manager import Database
 
-import interactions
-from interactions import Extension, InteractionContext, OptionType, Embed
+from interactions import Extension, InteractionContext, OptionType, Embed, slash_command, slash_option
 from interactions.ext.paginators import Paginator
 
 """
@@ -23,14 +22,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @interactions.slash_command(
-        name="server",
-        group_name="tag",
-        dm_permission=False,
-        sub_cmd_name="get",
-        sub_cmd_description="Displays the specified tag's content"
+    @slash_command(
+        name="tag_get",
+        description="Displays the specified tag's content",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -87,17 +84,18 @@ class TagExtension(Extension):
     @param name The name of the tag.
     @param content The content of the tag.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="add",
-        sub_cmd_description="Creates a tag with a given name and content"
+    @slash_command(
+        name="tag_add",
+        description="Creates a tag with a given name and content",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The name of the tag",
         required=True,
         opt_type=OptionType.STRING
     )
-    @interactions.slash_option(
+    @slash_option(
         name="content",
         description="The content of the tag",
         required=True,
@@ -149,11 +147,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="delete",
-        sub_cmd_description="Deletes the specified tag"
+    @slash_command(
+        name="tag_delete",
+        description="Deletes the specified tag",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -210,11 +209,12 @@ class TagExtension(Extension):
     @param context The context for which this command was invoked.
     @param name The tag's name.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="info",
-        sub_cmd_description="Displays the info about a specified tag"
+    @slash_command(
+        name="tag_info",
+        description="Displays the info about a specified tag",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="name",
         description="The tag's name",
         required=True,
@@ -241,13 +241,20 @@ class TagExtension(Extension):
                 # If the the specified tag is not in the database we will respond to the user who invoked this command and tell them so.
                 await context.send(f"No tag with name '{name}' found!")
             else:
+                # Create an embed to display the info of the tag in.
+                embed = Embed()
+                embed.add_field(f"Name: {fetch[0]}", f"Date Created: {fetch[4]}\nTimes Used: {fetch[5]}\n Content: {fetch[1]}")
+
                 # Get the user object of the author of the tag.
                 authorUser = context.client.get_user(fetch[2])
 
-                # Create an embedded message to display the info of the tag in.
-                embed = Embed()
-                embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
-                embed.add_field(f"Name: {fetch[0]}", f"Date Created: {fetch[4]}\nTimes Used: {fetch[5]}\n Content: {fetch[1]}")
+                # Check if the user object is None.
+                if (authorUser is not None):
+                    # If the user object isn't None we will set the author of the embed to be the author's name and avatar icon.
+                    embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
+                else:
+                    # If the user object is None we will set the author of the embed to be the user ID of the author.
+                    embed.set_author(f"Author ID: {fetch[2]}", icon_url=context.client.user.display_avatar.url)
 
                 # Respond to the user who invoked this command with the embedded message.
                 await context.send(embeds=embed)
@@ -265,9 +272,10 @@ class TagExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="all",
-        sub_cmd_description="Displays the info of every tag."
+    @slash_command(
+        name="tag_all",
+        description="Displays the info of every tag",
+        dm_permission=False
     )
     async def tag_all(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -295,13 +303,20 @@ class TagExtension(Extension):
 
             # Loop over every row in the fetched results.
             for tag in fetch:
+                # Create an embed to display the info of the tag in.
+                embed = Embed()
+                embed.add_field(f"Name: {tag[0]}", f"Date Created: {tag[4]}\nTimes Used: {tag[5]}\n Content: {tag[1]}")
+
                 # Get the user object of the author of the tag.
                 authorUser = context.client.get_user(tag[2])
 
-                # Create an embed to display the info of the tag in.
-                embed = Embed()
-                embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
-                embed.add_field(f"Name: {tag[0]}", f"Date Created: {tag[4]}\nTimes Used: {tag[5]}\n Content: {tag[1]}")
+                # Check if the user object is None.
+                if (authorUser is not None):
+                    # If the user object isn't None we will set the author of the embed to be the author's name and avatar icon.
+                    embed.set_author(authorUser.tag, icon_url=authorUser.display_avatar.url)
+                else:
+                    # If the user object is None we will set the author of the embed to be the user ID of the author.
+                    embed.set_author(f"Author ID: {tag[2]}", icon_url=context.client.user.display_avatar.url)
 
                 # Add the embed to the list of embeds.
                 embeds.append(embed)
@@ -323,9 +338,10 @@ class TagExtension(Extension):
 
     @param context The context for which this command was invoked.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="random",
-        sub_cmd_description="Displays the content of a random tag"
+    @slash_command(
+        name="tag_random",
+        description="Displays the content of a random tag",
+        dm_permission=False
     )
     async def tag_random(self, context: InteractionContext):
         # Get a connection to the bot database.
@@ -377,17 +393,18 @@ class TagExtension(Extension):
     @param userid An optional argument which will cause this command to clear all tags with an author who has the specified user ID.
     @param guildid An optional argument which will cause this command to clear all tags with the specified guild ID.
     """
-    @tag_get.subcommand(
-        sub_cmd_name="clear",
-        sub_cmd_description="Clears tags that meet a condition. Only the owner of the bot can use this command"
+    @slash_command(
+        name="tag_clear",
+        description="Clears tags that meet a condition. Only the owner of the bot can use this command",
+        dm_permission=False
     )
-    @interactions.slash_option(
+    @slash_option(
         name="userid",
         description="If specified this command will clear tags created by the person with the userID",
         required=False,
         opt_type=OptionType.STRING
     )
-    @interactions.slash_option(
+    @slash_option(
         name="guildid",
         description="If specified this command will clear tags created within a server with the guildID",
         required=False,

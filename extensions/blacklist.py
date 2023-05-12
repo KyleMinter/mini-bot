@@ -5,7 +5,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 from util.config_manager import Config
 
-from interactions import listen, Message, Extension
+from interactions import listen, Extension
 from interactions.api.events import MessageCreate, MessageUpdate
 
 """
